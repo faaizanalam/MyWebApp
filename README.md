@@ -47,7 +47,4 @@ Run `npm run test:frontend:with:server` to run the UI tests in headless mode.
 
 2. With the test runner opened, click on the test file you want to test.
 
-___
-
-Made with ❤️ by [Walmyr](https://walmyr.dev).
->>>>>>> c00541d (Intial commit)
+__
