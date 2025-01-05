@@ -3,46 +3,47 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main
+      - main  # Trigger when pushing to the main branch
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
+    - name: Checkout Repository
       uses: actions/checkout@v2
-    
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
-    
+
     - name: Log in to Docker Hub
       uses: docker/login-action@v2
       with:
-        username: ${{ secrets.DOCKER_USERNAME }}  # Set your Docker Hub username in secrets
-        password: ${{ secrets.DOCKER_PASSWORD }}  # Set your Docker Hub password in secrets
-    
-    - name: Build Docker images
-      run: |
-        docker build -t faaizan/frontend-app:latest ./frontend
-        docker build -t faaizan/backend-app:latest ./backend
-    
-    - name: Log in to AWS
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1  # Set your AWS region
+        username: ${{ secrets.DOCKER_USERNAME }}  # GitHub secret for Docker Hub username
+        password: ${{ secrets.DOCKER_PASSWORD }}  # GitHub secret for Docker Hub password
 
-    - name: Push Docker images to Docker Hub
+    - name: Build and Push Docker Image to Docker Hub
       run: |
+        docker build -t faaizan/frontend-app .
         docker push faaizan/frontend-app:latest
-        docker push faaizan/backend-app:latest
-    
-    - name: Deploy to EC2 instance
+
+    - name: Set up AWS CLI
       run: |
-        ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SSH_KEY }} ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
-          docker pull faaizan/frontend-app:latest
-          docker pull faaizan/backend-app:latest
-          docker-compose -f /path/to/your/docker-compose.yml up -d
+        curl "https://d1vvhvl2y92vvt.cloudfront.net/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip awscliv2.zip
+        sudo ./aws/install
+        aws --version
+
+    - name: Deploy to EC2
+      run: |
+        echo "$EC2_SSH_KEY" > private.pem  # Load the SSH key from GitHub Secrets
+        chmod 600 private.pem  # Secure the private key
+        ssh -o StrictHostKeyChecking=no -i private.pem ubuntu@ec2-44-202-167-252.compute-1.amazonaws.com << 'EOF'
+          cd /home/ubuntu/
+          docker-compose down
+          docker-compose up -d
         EOF
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}  # GitHub secret for AWS Access Key ID
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # GitHub secret for AWS Secret Access Key
+        EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}  # GitHub secret for EC2 private key
