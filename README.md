@@ -1,3 +1,4 @@
+#Description
 In this project, I developed and deployed a fully functional web application using modern DevOps and cloud technologies. The project involved creating a simple web application with a frontend built using HTML, CSS, and JavaScript and a backend using Node.js (Express). Both components were containerized using Docker to ensure consistent and portable deployment.
 
 The application was deployed on AWS, utilizing EC2 instances for hosting. Additionally, I implemented a CI/CD pipeline using GitHub Actions to automate the processes of building, testing, and deploying the application. 
