@@ -5,6 +5,9 @@ The application was deployed on AWS, utilizing EC2 instances for hosting. Additi
 Key achievements include successfully deploying Dockerized frontend and backend services on AWS, setting up robust CI/CD automation, and documenting the entire process with detailed instructions and deployment logs. This project provided hands-on experience with Docker, AWS services, and CI/CD workflows, equipping me with essential skills for modern software development and DevOps practices.
 
 
+
+
+
 # MyWebApp
 =======
 # frontend-and-backend
